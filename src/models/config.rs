@@ -308,8 +308,10 @@ impl Default for AgentModelConfig {
             prd_model: ModelConfig::new("gemini", "gemini-3.1-pro-preview"),
             // Architect Agent: Use Gemini 3 Pro for design decisions
             architect_model: ModelConfig::new("gemini", "gemini-3-pro-preview"),
-            // Ralph Loop Agent: Use Gemini 3 Flash for implementation
-            ralph_model: ModelConfig::new("gemini", "gemini-3-flash-preview"),
+            // Ralph Loop Agent: Use Gemini 2.5 Flash for implementation
+            // Note: Gemini 3 models require thought_signature support for tool calls,
+            // which adk-rust v0.3.2 does not yet handle. Use 2.5 Flash until upstream support lands.
+            ralph_model: ModelConfig::new("gemini", "gemini-2.5-flash"),
         }
     }
 }

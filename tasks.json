@@ -1,0 +1,29 @@
+{
+  "project": "ts-hello-world",
+  "language": "TypeScript",
+  "phases": [],
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Project Setup and Implementation",
+      "description": "Initialize the TypeScript project, configure the compiler, and implement the main script to print 'Hello, World!'.",
+      "priority": 1,
+      "status": "in_progress",
+      "dependencies": [],
+      "user_story_id": "US-001",
+      "estimated_complexity": "low",
+      "files_created": [
+        "package.json",
+        "tsconfig.json",
+        "src/index.ts"
+      ],
+      "files_modified": [],
+      "commit_hash": null,
+      "attempts": 0,
+      "notes": "The project has a valid tsconfig.json\nRunning `npm start` (or equivalent) outputs 'Hello, World!' to the console\nThe process exits with code 0"
+    }
+  ],
+  "version": "1.0",
+  "created_at": "2026-02-22T21:40:02.918073+00:00",
+  "updated_at": "2026-02-22T21:40:05.504738+00:00"
+}

@@ -44,7 +44,7 @@ flowchart TB
     end
 
     subgraph "Phase 3: Implementation"
-        RL[Ralph Loop Agent<br/>gemini-3-flash-preview]
+        RL[Ralph Loop Agent<br/>gemini-2.5-flash]
         PROG[progress.json]
         CODE[Source Files]
         TEST[Test Files]
@@ -80,7 +80,9 @@ flowchart TB
 |-------|-----------------|---------------|----------|---------|
 | PRD Agent | Gemini | `gemini-3.1-pro-preview` | Configurable | Deep requirements analysis |
 | Architect Agent | Gemini | `gemini-3-pro-preview` | Configurable | Complex design decisions |
-| Ralph Loop Agent | Gemini | `gemini-3-flash-preview` | Disabled | Fast implementation iterations |
+| Ralph Loop Agent | Gemini | `gemini-2.5-flash` | Disabled | Fast implementation iterations |
+
+> **Note:** Gemini 3 models require [thought signatures](https://ai.google.dev/gemini-api/docs/thought-signatures) for tool calls. Since `adk-rust` v0.3.2 doesn't support this yet, the loop agent (which makes heavy use of tools) defaults to `gemini-2.5-flash`. The PRD and Architect agents work fine with Gemini 3 since they don't use multi-turn tool calling.
 
 All agents are fully configurable — see [Configuration](#configuration) for per-agent provider and model overrides.
 
@@ -195,7 +197,7 @@ Each agent can use a different model and provider:
 | `RALPH_ARCHITECT_MODEL` | `gemini-3-pro-preview` | Model for Architect Agent |
 | `RALPH_ARCHITECT_THINKING` | `false` | Enable thinking mode |
 | `RALPH_LOOP_PROVIDER` | `gemini` | Provider for Ralph Loop Agent |
-| `RALPH_LOOP_MODEL` | `gemini-3-flash-preview` | Model for Ralph Loop Agent |
+| `RALPH_LOOP_MODEL` | `gemini-2.5-flash` | Model for Ralph Loop Agent |
 | `RALPH_LOOP_THINKING` | `false` | Enable thinking mode |
 
 **Supported Providers**: `anthropic`, `openai`, `gemini`, `ollama`
@@ -297,7 +299,7 @@ let config = RalphConfig::builder()
         architect_model: ModelConfig::new("gemini", "gemini-3-pro-preview")
             .with_thinking()
             .with_max_tokens(8192),
-        ralph_model: ModelConfig::new("gemini", "gemini-3-flash-preview")
+        ralph_model: ModelConfig::new("gemini", "gemini-2.5-flash")
             .with_max_tokens(4096),
     })
     .max_iterations(100)
