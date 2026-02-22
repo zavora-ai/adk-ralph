@@ -38,7 +38,7 @@ Match the complexity of your output to the user's request:
   - IF <condition>, THEN THE <system> SHALL <response>
 - Priority 1 = must have, Priority 2 = should have, Priority 3+ = nice to have
 - Be specific and testable in acceptance criteria
-- Don't over-engineer: a "hello world" needs 2-3 stories, not 10
+- Don't over-engineer: a "hello world" needs 1-2 stories, not 10
 "#;
 
 
