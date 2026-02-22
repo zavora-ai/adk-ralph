@@ -1,0 +1,28 @@
+{
+  "project": "hello-world",
+  "language": "Rust",
+  "phases": [],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Initialize and Implement Hello World",
+      "description": "Initialize a new Rust project using Cargo and implement the main function to print 'Hello, World!' to stdout.",
+      "priority": 1,
+      "status": "in_progress",
+      "dependencies": [],
+      "user_story_id": "US-001",
+      "estimated_complexity": "low",
+      "files_created": [
+        "Cargo.toml",
+        "src/main.rs"
+      ],
+      "files_modified": [],
+      "commit_hash": null,
+      "attempts": 0,
+      "notes": "WHEN the program is executed, THE system SHALL print exactly 'Hello, World!' to standard output.\nWHEN the message is printed, THE system SHALL terminate with an exit status code of 0."
+    }
+  ],
+  "version": "1.0",
+  "created_at": "2026-02-22T22:51:37.952352+00:00",
+  "updated_at": "2026-02-22T22:51:39.654872+00:00"
+}

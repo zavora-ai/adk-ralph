@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 
-[workspace]
+[dev-dependencies]
+assert_cmd = "2.0.4"
