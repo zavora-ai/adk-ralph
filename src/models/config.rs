@@ -304,12 +304,12 @@ pub struct AgentModelConfig {
 impl Default for AgentModelConfig {
     fn default() -> Self {
         Self {
-            // PRD Agent: Use Gemini Pro for requirements generation
-            prd_model: ModelConfig::new("gemini", "gemini-2.5-pro"),
-            // Architect Agent: Use Gemini Pro for design decisions
-            architect_model: ModelConfig::new("gemini", "gemini-2.5-pro"),
-            // Ralph Loop Agent: Use Gemini Flash for implementation
-            ralph_model: ModelConfig::new("gemini", "gemini-2.5-flash"),
+            // PRD Agent: Use Gemini 3.1 Pro for requirements generation
+            prd_model: ModelConfig::new("gemini", "gemini-3.1-pro-preview"),
+            // Architect Agent: Use Gemini 3 Pro for design decisions
+            architect_model: ModelConfig::new("gemini", "gemini-3-pro-preview"),
+            // Ralph Loop Agent: Use Gemini 3 Flash for implementation
+            ralph_model: ModelConfig::new("gemini", "gemini-3-flash-preview"),
         }
     }
 }

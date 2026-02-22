@@ -169,7 +169,7 @@ impl Default for ArchitectAgentBuilder {
     fn default() -> Self {
         Self {
             model: None,
-            model_config: ModelConfig::new("gemini", "gemini-2.5-pro"),
+            model_config: ModelConfig::new("gemini", "gemini-3-pro-preview"),
             prd_path: PathBuf::from("prd.md"),
             design_path: PathBuf::from("design.md"),
             tasks_path: PathBuf::from("tasks.json"),

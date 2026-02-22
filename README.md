@@ -28,14 +28,14 @@ flowchart TB
     end
 
     subgraph "Phase 1: Requirements"
-        PA[PRD Agent<br/>gemini-2.5-pro]
+        PA[PRD Agent<br/>gemini-3.1-pro-preview]
         PRD[prd.md]
         UP --> PA
         PA --> PRD
     end
 
     subgraph "Phase 2: Architecture"
-        AA[Architect Agent<br/>gemini-2.5-pro]
+        AA[Architect Agent<br/>gemini-3-pro-preview]
         DES[design.md]
         TSK[tasks.json]
         PRD --> AA
@@ -44,7 +44,7 @@ flowchart TB
     end
 
     subgraph "Phase 3: Implementation"
-        RL[Ralph Loop Agent<br/>gemini-2.5-flash]
+        RL[Ralph Loop Agent<br/>gemini-3-flash-preview]
         PROG[progress.json]
         CODE[Source Files]
         TEST[Test Files]
@@ -78,9 +78,9 @@ flowchart TB
 
 | Agent | Default Provider | Default Model | Thinking | Purpose |
 |-------|-----------------|---------------|----------|---------|
-| PRD Agent | Gemini | `gemini-2.5-pro` | Configurable | Deep requirements analysis |
-| Architect Agent | Gemini | `gemini-2.5-pro` | Configurable | Complex design decisions |
-| Ralph Loop Agent | Gemini | `gemini-2.5-flash` | Disabled | Fast implementation iterations |
+| PRD Agent | Gemini | `gemini-3.1-pro-preview` | Configurable | Deep requirements analysis |
+| Architect Agent | Gemini | `gemini-3-pro-preview` | Configurable | Complex design decisions |
+| Ralph Loop Agent | Gemini | `gemini-3-flash-preview` | Disabled | Fast implementation iterations |
 
 All agents are fully configurable — see [Configuration](#configuration) for per-agent provider and model overrides.
 
@@ -189,13 +189,13 @@ Each agent can use a different model and provider:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `RALPH_PRD_PROVIDER` | `gemini` | Provider for PRD Agent |
-| `RALPH_PRD_MODEL` | `gemini-2.5-pro` | Model for PRD Agent |
+| `RALPH_PRD_MODEL` | `gemini-3.1-pro-preview` | Model for PRD Agent |
 | `RALPH_PRD_THINKING` | `false` | Enable thinking mode |
 | `RALPH_ARCHITECT_PROVIDER` | `gemini` | Provider for Architect Agent |
-| `RALPH_ARCHITECT_MODEL` | `gemini-2.5-pro` | Model for Architect Agent |
+| `RALPH_ARCHITECT_MODEL` | `gemini-3-pro-preview` | Model for Architect Agent |
 | `RALPH_ARCHITECT_THINKING` | `false` | Enable thinking mode |
 | `RALPH_LOOP_PROVIDER` | `gemini` | Provider for Ralph Loop Agent |
-| `RALPH_LOOP_MODEL` | `gemini-2.5-flash` | Model for Ralph Loop Agent |
+| `RALPH_LOOP_MODEL` | `gemini-3-flash-preview` | Model for Ralph Loop Agent |
 | `RALPH_LOOP_THINKING` | `false` | Enable thinking mode |
 
 **Supported Providers**: `anthropic`, `openai`, `gemini`, `ollama`
@@ -291,13 +291,13 @@ use adk_ralph::{RalphConfig, AgentModelConfig, ModelConfig};
 
 let config = RalphConfig::builder()
     .agents(AgentModelConfig {
-        prd_model: ModelConfig::new("gemini", "gemini-2.5-pro")
+        prd_model: ModelConfig::new("gemini", "gemini-3.1-pro-preview")
             .with_thinking()
             .with_max_tokens(8192),
-        architect_model: ModelConfig::new("gemini", "gemini-2.5-pro")
+        architect_model: ModelConfig::new("gemini", "gemini-3-pro-preview")
             .with_thinking()
             .with_max_tokens(8192),
-        ralph_model: ModelConfig::new("gemini", "gemini-2.5-flash")
+        ralph_model: ModelConfig::new("gemini", "gemini-3-flash-preview")
             .with_max_tokens(4096),
     })
     .max_iterations(100)

@@ -107,7 +107,7 @@ impl Default for PrdAgentBuilder {
     fn default() -> Self {
         Self {
             model: None,
-            model_config: ModelConfig::new("gemini", "gemini-2.5-pro"),
+            model_config: ModelConfig::new("gemini", "gemini-3.1-pro-preview"),
             output_path: PathBuf::from("prd.md"),
             project_path: PathBuf::from("."),
         }
