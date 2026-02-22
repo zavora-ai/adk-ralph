@@ -1,0 +1,17 @@
+{
+  "name": "hello-world-cli",
+  "version": "1.0.0",
+  "description": "A minimal, standalone TypeScript command-line application",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
