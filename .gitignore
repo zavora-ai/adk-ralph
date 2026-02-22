@@ -1,0 +1,17 @@
+# Build artifacts
+/target/
+
+# Environment
+.env
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Proptest regressions (optional, some teams track these)
+# *.proptest-regressions

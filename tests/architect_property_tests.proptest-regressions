@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 9ac0e4330b954d908b89cd7b93e56834e5c4ea16bf638a96259126833c2b7f6d # shrinks to task_list = TaskList { project: "aa0a", language: "rust", phases: [], tasks: [Task { id: "TASK-222", title: "Implement core module", description: "aAA A.a.a  aaa,", priority: 1, status: Pending, dependencies: [], user_story_id: Some("US-001"), estimated_complexity: Medium, files_created: [], files_modified: [], commit_hash: None, attempts: 0, notes: "" }, Task { id: "TASK-222", title: "Implement core module", description: "A.a,  AA.  AAaA", priority: 1, status: Pending, dependencies: [], user_story_id: Some("US-001"), estimated_complexity: Medium, files_created: [], files_modified: [], commit_hash: None, attempts: 0, notes: "" }], version: "1.0", created_at: Some("2026-01-11T06:28:56.883326+00:00"), updated_at: Some("2026-01-11T06:28:56.883327+00:00") }

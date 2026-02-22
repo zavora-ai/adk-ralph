@@ -1,0 +1,52 @@
+[package]
+name = "adk-ralph"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85.0"
+license = "Apache-2.0"
+authors = ["James Karanja Maina <james.karanja@zavora.ai>"]
+description = "Ralph - Multi-Agent Autonomous Development System powered by ADK-Rust"
+keywords = ["adk", "agent", "autonomous", "development", "llm"]
+categories = ["development-tools", "asynchronous"]
+repository = "https://github.com/zavora-ai/adk-ralph"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "ralph"
+path = "src/main.rs"
+
+[dependencies]
+# ADK-Rust from crates.io (with required features)
+adk-rust = { version = "0.3.2", features = ["openai", "anthropic", "deepseek", "groq", "ollama", "agents", "models", "tools", "runner", "sessions", "telemetry", "gemini"] }
+
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+async-trait = "0.1"
+async-stream = "0.3"
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+thiserror = "2.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.21"
+
+# CLI and display
+clap = { version = "4", features = ["derive"] }
+colored = "2"
+dotenvy = "0.15"
+
+[dev-dependencies]
+tempfile = "3"
+proptest = "1.4"
+dotenvy = "0.15"
+
+[workspace]
