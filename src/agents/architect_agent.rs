@@ -109,8 +109,10 @@ Generate a JSON response with two sections: `design` and `tasks`.
 ## File Structure Rules
 
 - The project root directory already exists — do NOT include it in paths
-- Use paths relative to project root (e.g., "main.go" not "./main.go")
+- Use paths relative to project root (e.g., "src/main.rs" not "my-project/src/main.rs")
 - Do NOT create wrapper directories named after the project
+- Do NOT prefix paths with the project name (WRONG: "hello-world/src/main.rs", RIGHT: "src/main.rs")
+- In the file_structure tree, start from the project root contents, not the project folder itself
 - Follow standard conventions for the target language
 - Only create directories that are actually needed
 

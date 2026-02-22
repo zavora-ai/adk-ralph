@@ -2,23 +2,23 @@
 
 ## Architecture Overview
 
-A minimal command-line executable that outputs 'Hello, World!' to the standard output stream to verify the runtime environment.
+A minimal command-line application that outputs a static greeting to standard output to verify the execution environment.
 
 ## Component Diagram
 
 ```mermaid
 ```mermaid
 flowchart LR
-    User -->|Executes| Binary
-    Binary -->|Writes| StdOut["Standard Output"]
+    Start((Start)) --> Print["Print 'Hello World'"]
+    Print --> Stop((Exit 0))
 ```
 ```
 
 ## Components
 
-### Main Entry Point
+### Entry Point
 
-**Purpose**: Entry point of the application that prints the message and terminates.
+**Purpose**: Main execution entry point that prints the greeting
 
 **Interface**:
 - main
@@ -36,12 +36,11 @@ hello-world/
 
 ## Technology Stack
 
-- **Language**: Rust
+- **Language**: rust
 - **Testing**: cargo test
 - **Build Tool**: cargo
 
 ## Design Decisions
 
-- Use Standard Output (stdout): Requirement specifies printing to console; stdout is the standard channel for this.
-- Single Binary: Scope is trivial; no need for libraries or modules.
+- Single Source File: The scope is trivial; separating logic into modules would add unnecessary boilerplate.
 

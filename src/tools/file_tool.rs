@@ -29,7 +29,8 @@ impl FileTool {
     }
 
     fn validate_path(&self, rel_path: &str) -> Result<PathBuf> {
-        let full_path = self.project_path.join(rel_path);
+        let sanitized = self.sanitize_path(rel_path);
+        let full_path = self.project_path.join(&sanitized);
 
         // For new files, check parent exists or can be created
         if !full_path.exists() {
@@ -58,6 +59,25 @@ impl FileTool {
         }
 
         Ok(canonical)
+    }
+
+    /// Strip the project folder name prefix if the LLM accidentally includes it.
+    ///
+    /// For example, if project_path is "./hello-world" and the LLM passes
+    /// "hello-world/src/main.rs", this returns "src/main.rs".
+    fn sanitize_path(&self, rel_path: &str) -> String {
+        if let Some(folder_name) = self.project_path.file_name().and_then(|n| n.to_str()) {
+            let prefix_slash = format!("{}/", folder_name);
+            if rel_path.starts_with(&prefix_slash) {
+                tracing::warn!(
+                    original = %rel_path,
+                    sanitized = %&rel_path[prefix_slash.len()..],
+                    "Stripped project folder prefix from path"
+                );
+                return rel_path[prefix_slash.len()..].to_string();
+            }
+        }
+        rel_path.to_string()
     }
 }
 
@@ -130,7 +150,8 @@ impl Tool for FileTool {
                     adk_rust::AdkError::Tool("'content' is required for write operation".to_string())
                 })?;
 
-                let full_path = self.project_path.join(&args.path);
+                let sanitized_path = self.sanitize_path(&args.path);
+                let full_path = self.project_path.join(&sanitized_path);
 
                 // Log the actual file creation path for debugging
                 tracing::info!(
@@ -171,7 +192,8 @@ impl Tool for FileTool {
                 }))
             }
             "list" => {
-                let full_path = self.project_path.join(&args.path);
+                let sanitized_path = self.sanitize_path(&args.path);
+                let full_path = self.project_path.join(&sanitized_path);
                 let entries: Vec<Value> = std::fs::read_dir(&full_path)
                     .map_err(|e| {
                         adk_rust::AdkError::Tool(format!("Failed to read directory: {}", e))

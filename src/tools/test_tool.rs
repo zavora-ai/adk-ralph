@@ -220,15 +220,49 @@ impl TestTool {
             }
         }
 
-        // Execute the command
-        let output = Command::new(cmd)
+        // For Node/TS projects, ensure dependencies are installed
+        let timeout_secs = 120;
+        if matches!(language, Language::TypeScript | Language::JavaScript) {
+            let pkg_json = self.project_root.join("package.json");
+            let node_modules = self.project_root.join("node_modules");
+            if pkg_json.exists() && !node_modules.exists() {
+                let install_future = Command::new("npm")
+                    .args(["install", "--prefer-offline"])
+                    .current_dir(&self.project_root)
+                    .stdout(Stdio::piped())
+                    .stderr(Stdio::piped())
+                    .output();
+
+                let install = tokio::time::timeout(
+                    std::time::Duration::from_secs(timeout_secs),
+                    install_future,
+                )
+                .await
+                .map_err(|_| format!("npm install timed out after {}s", timeout_secs))?
+                .map_err(|e| format!("Failed to run npm install: {}", e))?;
+
+                if !install.status.success() {
+                    let stderr = String::from_utf8_lossy(&install.stderr);
+                    return Err(format!("npm install failed: {}", stderr));
+                }
+            }
+        }
+
+        // Execute the command with a timeout
+        let child = Command::new(cmd)
             .args(&args)
             .current_dir(&self.project_root)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
-            .output()
-            .await
-            .map_err(|e| format!("Failed to execute test command: {}", e))?;
+            .output();
+
+        let output = tokio::time::timeout(
+            std::time::Duration::from_secs(timeout_secs),
+            child,
+        )
+        .await
+        .map_err(|_| format!("Test command timed out after {}s: {} {}", timeout_secs, cmd, args.join(" ")))?
+        .map_err(|e| format!("Failed to execute test command: {}", e))?;
 
         let stdout = String::from_utf8_lossy(&output.stdout).to_string();
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();

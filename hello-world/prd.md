@@ -2,19 +2,19 @@
 
 ## Project Overview
 
-A foundational program designed to output the classic 'Hello, World!' message to the console. This project serves as a minimal working example to verify the development and execution environment.
+A basic program that prints a greeting to the console. This project serves as a foundational test to verify that the execution environment is set up correctly.
 
 ## User Stories
 
-### US-001: Print Hello World
+### US-001: Print Greeting
 
 **Priority**: 1
 **Status**: pending
 
-**User Story**: As a user, I want the program to print 'Hello, World!' when executed, so that I can verify the environment is working correctly.
+**User Story**: As a developer, I want the program to print Hello World to the console, so that I can verify my environment is working.
 
 #### Acceptance Criteria
 
-- [ ] 1. WHEN the program is executed, THE system SHALL print exactly 'Hello, World!' to standard output.
-- [ ] 2. WHEN the message is printed, THE system SHALL terminate with an exit status code of 0.
+- [ ] 1. WHEN the user executes the program, THE system SHALL output the exact string 'Hello World' to the console.
+- [ ] 2. WHEN the execution is complete, THE system SHALL exit with a standard success code.
 

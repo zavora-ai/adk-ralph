@@ -50,21 +50,22 @@ Features:
 
     // Generate PRD
     match prd_agent.generate(prompt).await {
-        Ok(prd) => {
+        Ok(result) => {
             println!("✅ PRD Generated!");
             println!();
             println!("📊 Summary:");
-            println!("   Project: {}", prd.project);
-            println!("   User Stories: {}", prd.user_stories.len());
+            println!("   Project: {}", result.prd.project);
+            println!("   User Stories: {}", result.prd.user_stories.len());
+            println!("   Project Dir: {}", result.project_dir.display());
             println!();
 
             // Show user stories
-            for story in &prd.user_stories {
+            for story in &result.prd.user_stories {
                 println!("   {} - {} (Priority: {})", story.id, story.title, story.priority);
             }
 
             println!();
-            println!("📄 PRD saved to: {}/prd.md", project_path.display());
+            println!("📄 PRD saved to: {}/prd.md", result.project_dir.display());
         }
         Err(e) => {
             println!("❌ Error: {}", e);

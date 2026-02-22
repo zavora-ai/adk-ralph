@@ -228,14 +228,21 @@ impl RunProjectTool {
     ) -> Result<(i32, String, String)> {
         use tokio::process::Command;
 
-        let output = Command::new(program)
+        let timeout_secs = 120;
+        let child = Command::new(program)
             .args(args)
             .current_dir(&self.project_path)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
-            .output()
-            .await
-            .map_err(|e| AdkError::Tool(format!("Failed to execute command: {}", e)))?;
+            .output();
+
+        let output = tokio::time::timeout(
+            std::time::Duration::from_secs(timeout_secs),
+            child,
+        )
+        .await
+        .map_err(|_| AdkError::Tool(format!("Command timed out after {}s: {} {}", timeout_secs, program, args.join(" "))))?
+        .map_err(|e| AdkError::Tool(format!("Failed to execute command: {}", e)))?;
 
         let exit_code = output.status.code().unwrap_or(-1);
         let stdout = String::from_utf8_lossy(&output.stdout).to_string();

@@ -94,6 +94,7 @@ const RALPH_LOOP_INSTRUCTION: &str = r#"You are Ralph, an autonomous development
 3. **Record learnings** - Always append to progress after completing a task
 4. **Read progress first** - Learn from past work before starting
 5. **Only exit when done** - ONLY call `exit_loop` when ALL tasks are completed
+6. **File paths are relative to the project root** - All file tool paths are relative to the project directory. Do NOT include the project folder name in paths. For example, write to `src/main.rs` not `my-project/src/main.rs`. Write to `Cargo.toml` not `my-project/Cargo.toml`.
 
 ## Completion Detection
 
@@ -315,6 +316,7 @@ impl RalphLoopAgentBuilder {
             if let Ok(design) = DesignDocument::load_markdown(&design_path) {
                 inst.push_str("\n\n## Project Context\n\n");
                 inst.push_str(&format!("Project: {}\n", design.project));
+                inst.push_str(&format!("Project root: {} (all file paths are relative to this directory)\n", self.project_path.display()));
                 if let Some(ref tech) = design.technology_stack {
                     inst.push_str(&format!("Language: {}\n", tech.language));
                 }

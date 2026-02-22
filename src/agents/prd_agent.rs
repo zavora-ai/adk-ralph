@@ -39,8 +39,23 @@ Match the complexity of your output to the user's request:
 - Priority 1 = must have, Priority 2 = should have, Priority 3+ = nice to have
 - Be specific and testable in acceptance criteria
 - Don't over-engineer: a "hello world" needs 1-2 stories, not 10
+
+## Project Folder
+
+- You MUST include a `project_folder` field in your response
+- This should be a short, lowercase, kebab-case name suitable for a directory (e.g. "weather-cli", "todo-api")
+- Derive it naturally from the project name
 "#;
 
+
+/// Result of PRD generation, includes the document and the project directory.
+#[derive(Debug, Clone)]
+pub struct PrdResult {
+    /// The generated PRD document.
+    pub prd: crate::models::PrdDocument,
+    /// The project directory created by the agent (e.g. `./hello-world-cli`).
+    pub project_dir: PathBuf,
+}
 
 /// PRD Agent that generates structured requirements using LlmAgent.
 ///
@@ -153,6 +168,10 @@ impl PrdAgentBuilder {
                     "type": "string",
                     "description": "Name of the project"
                 },
+                "project_folder": {
+                    "type": "string",
+                    "description": "Short, lowercase, kebab-case folder name for the project (e.g. 'weather-cli', 'todo-api'). Used as the directory name on disk."
+                },
                 "overview": {
                     "type": "string",
                     "description": "Detailed description of the project scope, goals, and target users"
@@ -205,7 +224,7 @@ impl PrdAgentBuilder {
                     "description": "How success will be measured"
                 }
             },
-            "required": ["project_name", "overview", "user_stories"]
+            "required": ["project_name", "project_folder", "overview", "user_stories"]
         });
 
         // Build the LlmAgent with output_schema for structured response
@@ -331,9 +350,9 @@ impl PrdAgent {
     /// This method:
     /// 1. Creates a session for the agent
     /// 2. Runs the agent with the prompt (returns structured JSON)
-    /// 3. Writes the PRD to prd.md
-    /// 4. Returns the parsed PRD document
-    pub async fn generate(&self, prompt: &str) -> Result<crate::models::PrdDocument> {
+    /// 3. Creates the project folder and writes the PRD inside it
+    /// 4. Returns the parsed PRD document and project directory path
+    pub async fn generate(&self, prompt: &str) -> Result<PrdResult> {
         use adk_rust::{Content, Part};
         use adk_rust::runner::{Runner, RunnerConfig};
         use adk_rust::session::{CreateRequest, InMemorySessionService, SessionService};
@@ -418,13 +437,36 @@ impl PrdAgent {
         // Convert JSON to PrdDocument
         let prd = json_to_prd_document(&prd_json)?;
 
-        // Write the PRD as markdown
-        let prd_path = self.project_path.join("prd.md");
+        // Read the project_folder chosen by the LLM, fall back to "project"
+        let folder_name = prd_json["project_folder"]
+            .as_str()
+            .unwrap_or("project")
+            .to_string();
+
+        // Avoid overwriting an existing project folder — append a numeric suffix
+        let mut project_dir = self.project_path.join(&folder_name);
+        if project_dir.exists() {
+            let mut counter = 2u32;
+            loop {
+                let candidate = self.project_path.join(format!("{}-{}", folder_name, counter));
+                if !candidate.exists() {
+                    project_dir = candidate;
+                    break;
+                }
+                counter += 1;
+            }
+        }
+
+        std::fs::create_dir_all(&project_dir)
+            .map_err(|e| RalphError::Prd(format!("Failed to create project folder '{}': {}", project_dir.display(), e)))?;
+
+        // Write the PRD as markdown inside the project folder
+        let prd_path = project_dir.join("prd.md");
         let markdown = prd_to_markdown(&prd);
         std::fs::write(&prd_path, &markdown)
             .map_err(|e| RalphError::Prd(format!("Failed to write PRD file: {}", e)))?;
 
-        Ok(prd)
+        Ok(PrdResult { prd, project_dir })
     }
 }
 

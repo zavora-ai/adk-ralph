@@ -1,14 +1,14 @@
 {
   "project": "hello-world",
-  "language": "Rust",
+  "language": "rust",
   "phases": [],
   "tasks": [
     {
       "id": "TASK-001",
-      "title": "Initialize and Implement Hello World",
-      "description": "Initialize a new Rust project using Cargo and implement the main function to print 'Hello, World!' to stdout.",
+      "title": "Initialize Project and Implement Greeting",
+      "description": "Initialize a new Rust project and implement the main function to print 'Hello World' to the console.",
       "priority": 1,
-      "status": "in_progress",
+      "status": "completed",
       "dependencies": [],
       "user_story_id": "US-001",
       "estimated_complexity": "low",
@@ -17,12 +17,12 @@
         "src/main.rs"
       ],
       "files_modified": [],
-      "commit_hash": null,
+      "commit_hash": "ac4b7ad",
       "attempts": 0,
-      "notes": "WHEN the program is executed, THE system SHALL print exactly 'Hello, World!' to standard output.\nWHEN the message is printed, THE system SHALL terminate with an exit status code of 0."
+      "notes": "The file src/main.rs exists.\nExecuting 'cargo run' outputs 'Hello World' to the console.\nThe process exits with code 0."
     }
   ],
   "version": "1.0",
-  "created_at": "2026-02-22T22:51:37.952352+00:00",
-  "updated_at": "2026-02-22T22:51:39.654872+00:00"
+  "created_at": "2026-02-22T23:14:32.186265+00:00",
+  "updated_at": "2026-02-22T23:15:04.499324+00:00"
 }

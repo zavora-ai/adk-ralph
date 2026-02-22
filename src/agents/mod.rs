@@ -11,4 +11,4 @@ pub mod prd_agent;
 
 pub use architect_agent::ArchitectAgent;
 pub use loop_agent::{CompletionStatus, RalphLoopAgent, RalphLoopAgentBuilder};
-pub use prd_agent::{PrdAgent, PrdAgentBuilder};
+pub use prd_agent::{PrdAgent, PrdAgentBuilder, PrdResult};

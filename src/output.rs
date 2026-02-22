@@ -227,6 +227,146 @@ impl RalphOutput {
         }
     }
 
+    /// Print a concise tool result summary at Normal level.
+    ///
+    /// Shows meaningful outcomes for key tools (tests, git, npm install)
+    /// without the full JSON dump that Verbose shows.
+    pub fn tool_result_summary(&self, name: &str, response: &serde_json::Value) {
+        if !self.level.is_normal() || self.level.is_verbose() {
+            return; // Verbose already shows full response via tool_response()
+        }
+
+        match name {
+            "test" => {
+                if let Some(results) = response.get("results") {
+                    let passed = results.get("passed").and_then(|v| v.as_u64()).unwrap_or(0);
+                    let failed = results.get("failed").and_then(|v| v.as_u64()).unwrap_or(0);
+                    let skipped = results.get("skipped").and_then(|v| v.as_u64()).unwrap_or(0);
+                    let all_passed = results.get("all_passed").and_then(|v| v.as_bool()).unwrap_or(false);
+
+                    if all_passed {
+                        println!(
+                            "    {} Tests passed: {} passed{}",
+                            "✓".bright_green(),
+                            passed.to_string().green(),
+                            if skipped > 0 { format!(", {} skipped", skipped) } else { String::new() }
+                        );
+                    } else {
+                        println!(
+                            "    {} Tests failed: {} passed, {} failed{}",
+                            "✗".bright_red(),
+                            passed,
+                            failed.to_string().red(),
+                            if skipped > 0 { format!(", {} skipped", skipped) } else { String::new() }
+                        );
+                        // Show a snippet of stderr if tests failed
+                        if let Some(stderr) = response.get("stderr").and_then(|v| v.as_str()) {
+                            let error_lines: Vec<&str> = stderr
+                                .lines()
+                                .filter(|l| {
+                                    let lower = l.to_lowercase();
+                                    lower.contains("fail") || lower.contains("error") || lower.contains("assert")
+                                })
+                                .take(3)
+                                .collect();
+                            for line in error_lines {
+                                let trimmed = if line.len() > 100 { &line[..100] } else { line };
+                                println!("      {} {}", "│".bright_red(), trimmed.bright_black());
+                            }
+                        }
+                    }
+                } else if let Some(msg) = response.get("message").and_then(|v| v.as_str()) {
+                    // Fallback: detect/check operations
+                    println!("    {} {}", "ℹ".bright_blue(), msg.bright_black());
+                }
+            }
+            "git" => {
+                if let Some(op) = response.get("operation").and_then(|v| v.as_str()) {
+                    match op {
+                        "commit" => {
+                            if let Some(hash) = response.get("commit_hash").and_then(|v| v.as_str()) {
+                                let msg = response.get("message").and_then(|v| v.as_str()).unwrap_or("");
+                                let short_msg = if msg.len() > 50 { &msg[..50] } else { msg };
+                                println!(
+                                    "    {} Committed {} \"{}\"",
+                                    "✓".bright_green(),
+                                    hash[..7.min(hash.len())].bright_black(),
+                                    short_msg
+                                );
+                            } else {
+                                println!("    {} Committed", "✓".bright_green());
+                            }
+                        }
+                        "add" => {
+                            if let Some(files) = response.get("files").and_then(|v| v.as_array()) {
+                                println!(
+                                    "    {} Staged {} file(s)",
+                                    "✓".bright_green(),
+                                    files.len()
+                                );
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            "file" => {
+                // File writes already show "Writing <path>" from FunctionCall handler.
+                // Only show result for errors.
+                if let Some(false) = response.get("success").and_then(|v| v.as_bool()) {
+                    if let Some(op) = response.get("operation").and_then(|v| v.as_str()) {
+                        let path = response.get("path").and_then(|v| v.as_str()).unwrap_or("unknown");
+                        println!(
+                            "    {} Failed to {} {}",
+                            "✗".bright_red(),
+                            op,
+                            path.bright_black()
+                        );
+                    }
+                }
+            }
+            "run_project" => {
+                let success = response.get("success").and_then(|v| v.as_bool()).unwrap_or(false);
+                if let Some(cmd) = response.get("command").and_then(|v| v.as_str()) {
+                    if success {
+                        println!("    {} `{}` succeeded", "✓".bright_green(), cmd.bright_black());
+                    } else {
+                        println!("    {} `{}` failed", "✗".bright_red(), cmd.bright_black());
+                        if let Some(stderr) = response.get("stderr").and_then(|v| v.as_str()) {
+                            let last_lines: Vec<&str> = stderr.lines().rev().take(2).collect();
+                            for line in last_lines.iter().rev() {
+                                let trimmed = if line.len() > 100 { &line[..100] } else { line };
+                                println!("      {} {}", "│".bright_red(), trimmed.bright_black());
+                            }
+                        }
+                    }
+                }
+            }
+            "tasks" => {
+                // Show task info from get_next responses
+                if let Some(task) = response.get("task") {
+                    let id = task.get("id").and_then(|v| v.as_str()).unwrap_or("?");
+                    let title = task.get("title").and_then(|v| v.as_str()).unwrap_or("");
+                    println!(
+                        "    {} Next: {} - {}",
+                        "→".bright_blue(),
+                        id.cyan(),
+                        title
+                    );
+                } else if let Some(true) = response.get("all_complete").and_then(|v| v.as_bool()) {
+                    println!("    {} All tasks complete", "✓".bright_green());
+                } else if let Some(blocked) = response.get("blocked_count").and_then(|v| v.as_u64()) {
+                    println!(
+                        "    {} {} task(s) blocked",
+                        "⚠".bright_yellow(),
+                        blocked
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+
     /// Print LLM text output (shown at Verbose and above).
     pub fn llm_text(&self, text: &str) {
         if self.level.is_verbose() && !text.trim().is_empty() {
@@ -329,6 +469,9 @@ pub fn process_event_part(output: &RalphOutput, part: &Part) {
             output.tool_call(name, args);
         }
         Part::FunctionResponse { function_response, .. } => {
+            // At Normal level, show concise result summaries for key tools
+            output.tool_result_summary(&function_response.name, &function_response.response);
+            // At Verbose+, show the full response
             output.tool_response(&function_response.name, &function_response.response);
         }
         Part::Text { text } => {

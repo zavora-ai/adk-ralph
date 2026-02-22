@@ -224,20 +224,24 @@ impl RalphOrchestrator {
             .build()
             .await?;
 
-        let prd = prd_agent.generate(prompt).await?;
+        let prd_result = prd_agent.generate(prompt).await?;
 
-        self.output.status(&format!("Saved PRD to {}", self.config.prd_path));
+        // Update project_path to the folder chosen by the LLM
+        self.project_path = prd_result.project_dir;
+
+        self.output.status(&format!("Saved PRD to {}/{}",
+            self.project_path.display(), self.config.prd_path));
         info!(
             prd_path = %prd_path.display(),
-            user_stories = prd.user_stories.len(),
+            user_stories = prd_result.prd.user_stories.len(),
             "PRD generated and saved"
         );
 
         // Update state
-        self.state.prd = Some(prd.clone());
+        self.state.prd = Some(prd_result.prd.clone());
         self.state.phase = PipelinePhase::Design;
 
-        Ok(prd)
+        Ok(prd_result.prd)
     }
 
     /// Run the design phase (Architect Agent).
@@ -619,7 +623,11 @@ mod tests {
 
     #[test]
     fn test_skip_to_phase_validation() {
-        let config = RalphConfig::default();
+        let tmp_dir = std::env::temp_dir().join(format!("ralph-test-{}", std::process::id()));
+        std::fs::create_dir_all(&tmp_dir).unwrap();
+
+        let mut config = RalphConfig::default();
+        config.project_path = tmp_dir.to_string_lossy().to_string();
         let mut orchestrator = RalphOrchestrator::new(config).unwrap();
 
         // Should fail to skip to Design without PRD
@@ -637,5 +645,8 @@ mod tests {
         // Should succeed to skip to Requirements
         let result = orchestrator.skip_to_phase(PipelinePhase::Requirements);
         assert!(result.is_ok());
+
+        // Cleanup
+        let _ = std::fs::remove_dir_all(&tmp_dir);
     }
 }
